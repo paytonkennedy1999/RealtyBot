@@ -3,6 +3,12 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema, insertChatSessionSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
+import OpenAI from "openai";
+
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all properties
@@ -106,8 +112,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         session = await storage.updateChatSession(sessionId, updatedMessages);
       }
 
-      // Generate bot response
-      const botResponse = generateBotResponse(message);
+      // Generate bot response using AI
+      const botResponse = await generateAIBotResponse(message, session.messages || []);
       const botMessage = {
         id: randomUUID(),
         content: botResponse,
@@ -129,34 +135,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-function generateBotResponse(message: string): string {
-  const lowerMessage = message.toLowerCase();
-  
-  if (lowerMessage.includes('deep creek') || lowerMessage.includes('lake')) {
-    return "Deep Creek Lake is Maryland's premier mountain destination! We have lakefront, lake access, and lake view properties available. Would you like to see our current lakefront listings or learn more about lake access properties?";
-  } else if (lowerMessage.includes('ski') || lowerMessage.includes('wisp') || lowerMessage.includes('resort')) {
-    return "Wisp Resort offers fantastic ski-in/ski-out properties! We have condos and homes near the slopes. Are you looking for a ski property for vacation rental income or personal use?";
-  } else if (lowerMessage.includes('property') || lowerMessage.includes('search') || lowerMessage.includes('house') || lowerMessage.includes('home')) {
-    return "I can help you find the perfect property in Garrett County and Deep Creek Lake area! Are you interested in lakefront properties, ski resort homes, mountain retreats, or year-round residences?";
-  } else if (lowerMessage.includes('schedule') || lowerMessage.includes('showing') || lowerMessage.includes('view')) {
-    return "I'd be happy to schedule a property showing with one of our Railey Realty agents. Please share your contact information and which property caught your interest - we'll arrange a visit to beautiful Garrett County!";
-  } else if (lowerMessage.includes('agent') || lowerMessage.includes('contact') || lowerMessage.includes('speak')) {
-    return "Our experienced Railey Realty agents know the Deep Creek Lake area inside and out. May I have your name and phone number so one of our local experts can reach out to you?";
-  } else if (lowerMessage.includes('mortgage') || lowerMessage.includes('loan') || lowerMessage.includes('financing')) {
-    return "We work with local and regional lenders who understand the unique Deep Creek Lake market. What's your budget range? Mountain properties often have special financing considerations we can help navigate.";
-  } else if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('budget')) {
-    return "Deep Creek Lake properties range from cozy cabins around $200k to luxury lakefront estates over $750k. What budget range works for you? I can show you what's available in your price point.";
-  } else if (lowerMessage.includes('bedroom') || lowerMessage.includes('bed')) {
-    return "How many bedrooms do you need? We have everything from 1-bedroom ski condos to 5+ bedroom luxury mountain estates. Family size or rental income potential - what's your priority?";
-  } else if (lowerMessage.includes('location') || lowerMessage.includes('area') || lowerMessage.includes('neighborhood') || lowerMessage.includes('garrett')) {
-    return "Garrett County offers diverse areas: lakefront properties on Deep Creek Lake, ski-access homes near Wisp Resort, Northern Garrett County with farms and acreage, and Southern Garrett County near Oakland. Which area interests you most?";
-  } else if (lowerMessage.includes('vacation') || lowerMessage.includes('rental') || lowerMessage.includes('investment')) {
-    return "Deep Creek Lake is a fantastic vacation rental market! Properties near the lake and Wisp Resort perform especially well. Are you looking for an investment property or a personal vacation home that could earn rental income?";
-  } else if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
-    return "You're welcome! Railey Realty has been serving the Deep Creek Lake community for years. Is there anything else I can help you with regarding mountain properties?";
-  } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-    return "Hello! Welcome to Railey Realty - your Deep Creek Lake and Garrett County specialists! I can help you find lakefront properties, ski homes, mountain retreats, and year-round residences. What brings you to our beautiful area?";
-  } else {
-    return "I'm here to help you discover the beauty of Deep Creek Lake and Garrett County real estate! Whether you're looking for a lakefront home, ski property, mountain retreat, or investment opportunity, I can guide you through our current listings. How can I assist you today?";
+async function generateAIBotResponse(message: string, conversationHistory: any[]): Promise<string> {
+  try {
+    // Get current property data for context
+    const properties = await storage.getProperties();
+    const propertyContext = properties.slice(0, 5).map(p => 
+      `${p.title} - ${p.location} - $${p.price?.toLocaleString() || 'Contact for price'} - ${p.bedrooms}bed/${p.bathrooms}bath`
+    ).join('\n');
+
+    // Build conversation context
+    const conversationContext = conversationHistory
+      .slice(-6) // Last 6 messages for context
+      .map(msg => `${msg.isUser ? 'User' : 'Assistant'}: ${msg.content}`)
+      .join('\n');
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are a helpful real estate assistant for Railey Realty, specializing in Deep Creek Lake and Garrett County, Maryland properties. You help customers find lakefront homes, ski properties near Wisp Resort, mountain retreats, and investment properties.
+
+Key expertise areas:
+- Deep Creek Lake lakefront, lake access, and lake view properties
+- Wisp Resort ski-in/ski-out properties and vacation rentals
+- Garrett County mountain retreats and year-round homes
+- Local market knowledge of pricing and neighborhoods
+- Lead generation and scheduling property showings
+
+Current available properties (sample):
+${propertyContext}
+
+Guidelines:
+- Be conversational, helpful, and knowledgeable about the local area
+- Ask qualifying questions to understand buyer needs
+- Suggest specific property types based on their interests
+- Offer to schedule showings or connect them with agents
+- Mention local attractions like the lake, skiing, and mountain activities
+- Keep responses concise but informative (2-3 sentences max)
+- Always sound enthusiastic about the Deep Creek Lake area
+
+If someone asks about specific properties, reference the current listings. If they want to schedule a showing or speak with an agent, offer to collect their contact information.`
+        },
+        {
+          role: "user",
+          content: `Conversation history:\n${conversationContext}\n\nLatest message: ${message}`
+        }
+      ],
+      max_tokens: 200,
+      temperature: 0.7,
+    });
+
+    return completion.choices[0]?.message?.content || "I'm here to help you find the perfect Deep Creek Lake property! What type of home interests you?";
+  } catch (error) {
+    console.error("Error generating AI response:", error);
+    return "I'm here to help you discover beautiful Deep Creek Lake and Garrett County properties! What type of home are you looking for?";
   }
 }
