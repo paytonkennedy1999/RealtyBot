@@ -130,7 +130,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-xl shadow-2xl z-50 transform transition-all duration-300">
+    <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-xl shadow-2xl z-50 transform transition-all duration-300 flex flex-col">
       {/* Chat Header */}
       <div className="bg-real-estate-blue text-white p-4 rounded-t-xl flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -155,7 +155,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       </div>
 
       {/* Chat Messages Area */}
-      <div className="h-64 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((message) => (
           <div 
             key={message.id}
