@@ -35,7 +35,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
               </div>
-              <h1 className="text-xl font-semibold text-real-estate-dark">Premier Realty</h1>
+              <h1 className="text-xl font-semibold text-real-estate-dark">Railey Realty</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="#" className="text-real-estate-gray hover:text-real-estate-blue transition-colors">Properties</a>
@@ -50,15 +50,15 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <section className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-real-estate-dark mb-4">Find Your Dream Home</h2>
-          <p className="text-xl text-real-estate-gray mb-8">Our AI-powered assistant is here to help you discover the perfect property</p>
+          <h2 className="text-4xl font-bold text-real-estate-dark mb-4">Discover Deep Creek Lake Properties</h2>
+          <p className="text-xl text-real-estate-gray mb-8">Find lakefront homes, ski properties, and mountain retreats in beautiful Garrett County, Maryland</p>
           
           {/* Property Search Bar */}
           <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
             <form onSubmit={handlePropertySearch} className="flex flex-col sm:flex-row gap-4">
               <input 
                 type="text" 
-                placeholder="Enter location, ZIP code, or address..." 
+                placeholder="Search Deep Creek Lake, Garrett County properties..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent"

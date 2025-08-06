@@ -1,8 +1,8 @@
-# Real Estate Property Website
+# Railey Realty Chatbot Website
 
 ## Overview
 
-This is a modern real estate property website built with React, TypeScript, and Express.js. The application features a property listing interface with an integrated chatbot for lead generation and customer engagement. It uses a full-stack architecture with a PostgreSQL database and includes a comprehensive UI component library based on shadcn/ui.
+This is a modern real estate chatbot website built for Railey Realty, specializing in Deep Creek Lake and Garrett County, Maryland properties. The application integrates live property data from Railey.com and features an intelligent chatbot for lead generation and customer engagement. Built with React, TypeScript, and Express.js, it provides an authentic real estate experience with actual market data.
 
 ## User Preferences
 
@@ -34,11 +34,12 @@ Preferred communication style: Simple, everyday language.
 - **Migrations**: Drizzle Kit for schema migrations and database management
 
 ### Key Features
-- **Property Listings**: Browse and search real estate properties with filtering capabilities
-- **Interactive Chatbot**: AI-powered chat widget for customer engagement and lead qualification
+- **Live Property Data**: Direct integration with Railey.com for authentic Deep Creek Lake and Garrett County listings
+- **Location-Specific Chatbot**: AI-powered assistant with knowledge of lakefront, ski properties, and mountain retreats
 - **Lead Capture**: Modal-based lead capture system integrated with chatbot interactions
+- **Real Estate Expertise**: Specialized responses for Deep Creek Lake area including lakefront access, Wisp Resort properties, and Garrett County locations
 - **Responsive Design**: Mobile-first responsive design with adaptive layouts
-- **Real-time Updates**: Query invalidation and optimistic updates for seamless user experience
+- **Data Caching**: Smart caching system for Railey.com property data with 30-minute refresh cycles
 
 ### Development Architecture
 - **Monorepo Structure**: Client, server, and shared code organized in a single repository
@@ -54,8 +55,12 @@ Preferred communication style: Simple, everyday language.
 
 ## External Dependencies
 
-### Core Framework Dependencies
-- **@neondatabase/serverless**: Serverless PostgreSQL database connection
+### Data Integration
+- **Custom Railey.com Scraper**: Live property data integration with intelligent parsing and caching
+- **Web Scraping**: Real-time property listings from https://www.railey.com with fallback data for reliability
+
+### Core Framework Dependencies  
+- **@neondatabase/serverless**: Serverless PostgreSQL database connection (development)
 - **drizzle-orm & drizzle-kit**: TypeScript ORM and migration tooling
 - **@tanstack/react-query**: Server state management and caching
 - **react-hook-form & @hookform/resolvers**: Form handling with Zod integration

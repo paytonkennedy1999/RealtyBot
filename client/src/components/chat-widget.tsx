@@ -54,7 +54,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       // Add welcome message when chat opens
       const welcomeMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: "Hi! I'm your real estate assistant. I can help you find properties, answer questions about buying/selling, and connect you with our agents. How can I help you today?",
+        content: "Hello! I'm your Railey Realty assistant specializing in Deep Creek Lake and Garrett County properties. I can help you find lakefront homes, ski properties, mountain retreats, and connect you with our local experts. What type of property interests you?",
         isUser: false,
         timestamp: new Date().toISOString(),
       };
@@ -132,7 +132,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-sm">RealtyBot Assistant</h3>
+            <h3 className="font-semibold text-sm">Railey Realty Assistant</h3>
             <p className="text-xs opacity-75">Online now</p>
           </div>
         </div>

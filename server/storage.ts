@@ -1,5 +1,6 @@
 import { type Property, type InsertProperty, type Lead, type InsertLead, type ChatSession, type InsertChatSession, type ChatMessage } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { raileyScraper } from "./railey-scraper";
 
 export interface IStorage {
   // Properties
@@ -28,70 +29,36 @@ export class MemStorage implements IStorage {
     this.leads = new Map();
     this.chatSessions = new Map();
     
-    // Initialize with sample properties
-    this.initializeSampleData();
+    // Initialize with Railey.com data
+    this.initializeRaileyData();
   }
 
-  private initializeSampleData() {
-    const sampleProperties: InsertProperty[] = [
-      {
-        title: "Downtown Luxury Condo",
-        address: "123 Main St, Downtown",
-        price: 425000,
-        bedrooms: 2,
-        bathrooms: "2",
-        imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        description: "Modern downtown condo with city skyline view and premium finishes.",
-        features: ["City view", "Modern appliances", "Gym access", "Concierge"]
-      },
-      {
-        title: "Family Home with Yard",
-        address: "456 Oak Ave, Suburbia",
-        price: 325000,
-        bedrooms: 3,
-        bathrooms: "2.5",
-        imageUrl: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        description: "Spacious family home with large backyard perfect for children and pets.",
-        features: ["Large yard", "Updated kitchen", "Two-car garage", "Quiet neighborhood"]
-      },
-      {
-        title: "Waterfront Townhouse",
-        address: "789 Lake Dr, Riverside",
-        price: 575000,
-        bedrooms: 3,
-        bathrooms: "3",
-        imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        description: "Beautiful waterfront townhouse with dock access and stunning lake views.",
-        features: ["Waterfront", "Dock access", "Lake views", "Premium location"]
-      },
-      {
-        title: "Oak Valley Home",
-        address: "321 Valley Rd, Oak Valley",
-        price: 295000,
-        bedrooms: 3,
-        bathrooms: "2",
-        imageUrl: "https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        description: "Cozy suburban home with modern updates and great schools nearby.",
-        features: ["Updated interior", "Great schools", "Quiet street", "Move-in ready"]
-      },
-      {
-        title: "Modern Ranch Style",
-        address: "654 Pine St, Westfield",
-        price: 385000,
-        bedrooms: 4,
-        bathrooms: "2.5",
-        imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-        description: "Single-story ranch with open floor plan and beautiful landscaping.",
-        features: ["Open floor plan", "Master suite", "Landscaped yard", "Single story"]
-      }
-    ];
-
-    sampleProperties.forEach(property => {
-      this.createProperty(property);
-    });
+  private async initializeRaileyData() {
+    try {
+      const raileyProperties = await raileyScraper.fetchListings();
+      const convertedProperties = raileyProperties.slice(0, 12).map(prop => 
+        raileyScraper.convertToAppProperty(prop)
+      );
+      
+      convertedProperties.forEach(property => {
+        this.properties.set(property.id, {
+          ...property,
+          description: property.description || null,
+          features: property.features || null
+        });
+      });
+      
+      console.log(`Initialized with ${convertedProperties.length} properties from Railey.com`);
+    } catch (error) {
+      console.error('Error initializing Railey data:', error);
+    }
   }
 
   async getProperties(): Promise<Property[]> {
+    // Refresh Railey.com data periodically
+    if (this.properties.size === 0) {
+      await this.initializeRaileyData();
+    }
     return Array.from(this.properties.values());
   }
 
@@ -133,6 +100,9 @@ export class MemStorage implements IStorage {
       ...insertLead,
       id,
       createdAt: new Date(),
+      phone: insertLead.phone || null,
+      budget: insertLead.budget || null,
+      interests: insertLead.interests || null
     };
     this.leads.set(id, lead);
     return lead;
@@ -153,6 +123,7 @@ export class MemStorage implements IStorage {
       id,
       createdAt: new Date(),
       updatedAt: new Date(),
+      messages: insertSession.messages || []
     };
     this.chatSessions.set(id, session);
     return session;
