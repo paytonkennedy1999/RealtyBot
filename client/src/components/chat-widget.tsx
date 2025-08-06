@@ -15,6 +15,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
   const [sessionId] = useState(() => generateSessionId());
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -59,6 +60,13 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
         timestamp: new Date().toISOString(),
       };
       setMessages([welcomeMessage]);
+    }
+    
+    // Focus the input when chat opens
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   }, [isOpen, messages.length]);
 
@@ -122,7 +130,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-xl shadow-2xl z-40 transform transition-all duration-300">
+    <div className="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-xl shadow-2xl z-50 transform transition-all duration-300">
       {/* Chat Header */}
       <div className="bg-real-estate-blue text-white p-4 rounded-t-xl flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -224,27 +232,33 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t">
-        <div className="flex items-center space-x-2">
+      <div className="p-4 border-t bg-gray-50">
+        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center space-x-2">
           <input 
+            ref={inputRef}
             type="text" 
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..." 
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-real-estate-blue focus:border-transparent text-sm"
+            placeholder="Ask about lakefront homes, ski properties..." 
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-real-estate-blue focus:border-transparent text-sm bg-white"
             disabled={sendMessageMutation.isPending}
+            autoComplete="off"
+            tabIndex={0}
           />
           <button 
-            onClick={handleSendMessage}
+            type="submit"
             disabled={sendMessageMutation.isPending || !inputValue.trim()}
-            className="bg-real-estate-blue text-white rounded-full p-2 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-real-estate-blue text-white rounded-full p-2 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-            </svg>
+            {sendMessageMutation.isPending ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+              </svg>
+            )}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
