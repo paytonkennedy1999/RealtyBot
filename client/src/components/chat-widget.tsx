@@ -41,8 +41,20 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
         }, 1000);
       }
     },
-    onError: () => {
+    onError: (error: any) => {
       setIsTyping(false);
+      
+      // Add error message to chat
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        content: error?.message?.includes('quota') 
+          ? "I'm currently experiencing API limits. Please check back later or contact Railey Realty directly for assistance."
+          : "Sorry, I'm having trouble responding right now. Please try again or contact our team directly.",
+        isUser: false,
+        timestamp: new Date().toISOString(),
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
     },
   });
 
