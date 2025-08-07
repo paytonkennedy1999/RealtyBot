@@ -8,6 +8,7 @@ export interface IStorage {
   getProperty(id: string): Promise<Property | undefined>;
   searchProperties(query: string, maxPrice?: number): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
+  clearProperties(): Promise<void>;
 
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
@@ -92,6 +93,10 @@ export class MemStorage implements IStorage {
     };
     this.properties.set(id, property);
     return property;
+  }
+
+  async clearProperties(): Promise<void> {
+    this.properties.clear();
   }
 
   async createLead(insertLead: InsertLead): Promise<Lead> {

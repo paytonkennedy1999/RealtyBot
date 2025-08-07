@@ -4,6 +4,7 @@ import { Property } from "@shared/schema";
 import { ChatWidget } from "@/components/chat-widget";
 import { LeadCaptureModal } from "@/components/lead-capture-modal";
 import { PropertyCard } from "@/components/property-card";
+import { ScraperControl } from "@/components/scraper-control";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +72,11 @@ export default function Home() {
               </button>
             </form>
           </div>
+        </section>
+
+        {/* Data Management Section */}
+        <section className="mb-12 flex justify-center">
+          <ScraperControl />
         </section>
 
         {/* Featured Properties */}

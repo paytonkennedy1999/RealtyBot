@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertLeadSchema, insertChatSessionSchema } from "@shared/schema";
 import { randomUUID } from "crypto";
 import OpenAI from "openai";
+import { openaiScraper } from './openai-scraper.js';
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -32,12 +33,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date().toISOString(),
         source: "railey-scraper",
         total_properties: rawData.length,
-        cache_status: raileyScraper.lastFetched ? "cached" : "fresh",
+        cache_status: "legacy_scraper",
         data: rawData
       });
     } catch (error) {
       console.error("Error fetching scraper data:", error);
-      res.status(500).json({ message: "Failed to fetch scraper data", error: error.message });
+      res.status(500).json({ message: "Failed to fetch scraper data", error: String(error) });
+    }
+  });
+
+  // Manual scrape endpoint using OpenAI
+  app.post("/api/scrape-railey", async (req, res) => {
+    try {
+      console.log("Manual scrape triggered");
+      const properties = await openaiScraper.scrapeRaileyListings();
+      
+      // Update storage with new properties
+      if (properties.length > 0) {
+        await storage.clearProperties();
+        for (const property of properties) {
+          await storage.createProperty(property);
+        }
+        console.log(`Updated storage with ${properties.length} properties from OpenAI scraper`);
+      }
+
+      res.json({
+        success: true,
+        message: `Successfully scraped ${properties.length} properties`,
+        timestamp: new Date().toISOString(),
+        properties_count: properties.length,
+        last_scrape: openaiScraper.getLastScrapeTime()
+      });
+    } catch (error) {
+      console.error("Error in manual scrape:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to scrape properties", 
+        error: String(error)
+      });
+    }
+  });
+
+  // Get scraper status
+  app.get("/api/scraper-status", async (req, res) => {
+    try {
+      const lastScrape = openaiScraper.getLastScrapeTime();
+      const cachedCount = openaiScraper.getCachedProperties().length;
+      
+      res.json({
+        last_scrape_time: lastScrape,
+        last_scrape_formatted: lastScrape ? new Date(lastScrape).toLocaleString() : 'Never',
+        cached_properties_count: cachedCount,
+        is_recent: lastScrape && (Date.now() - lastScrape) < 3600000 // 1 hour
+      });
+    } catch (error) {
+      console.error("Error getting scraper status:", error);
+      res.status(500).json({ message: "Failed to get scraper status" });
     }
   });
 
