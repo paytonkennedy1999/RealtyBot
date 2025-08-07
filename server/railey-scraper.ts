@@ -29,19 +29,33 @@ export class RaileyScraper {
     }
 
     try {
+      console.log(`Attempting to fetch from: ${this.baseUrl}/listings/`);
       const response = await fetch(`${this.baseUrl}/listings/`);
+      
+      console.log(`Response status: ${response.status} ${response.statusText}`);
+      console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
+      
       const html = await response.text();
+      console.log(`HTML length: ${html.length} characters`);
+      console.log(`HTML preview (first 500 chars):`, html.substring(0, 500));
       
       // Parse the HTML to extract property data
       const properties = this.parseListingsFromHtml(html);
       
+      if (properties.length === 0) {
+        console.log('No properties parsed from HTML - likely website structure changed');
+        console.log('Using sample data as fallback');
+        return this.getSampleData();
+      }
+      
       this.listings = properties;
       this.lastFetched = new Date();
       
-      console.log(`Fetched ${properties.length} properties from Railey.com`);
+      console.log(`Successfully parsed ${properties.length} properties from Railey.com`);
       return properties;
     } catch (error) {
       console.error('Error fetching Railey listings:', error);
+      console.log('Using sample data as fallback due to error');
       // Return cached data if available, or sample data as fallback
       return this.listings.length > 0 ? this.listings : this.getSampleData();
     }

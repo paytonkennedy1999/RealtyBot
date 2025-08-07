@@ -22,6 +22,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug endpoint to export scraper data
+  app.get("/api/debug/scraper-data", async (req, res) => {
+    try {
+      const { raileyScraper } = await import("./railey-scraper.js");
+      const rawData = await raileyScraper.fetchListings();
+      
+      res.json({
+        timestamp: new Date().toISOString(),
+        source: "railey-scraper",
+        total_properties: rawData.length,
+        cache_status: raileyScraper.lastFetched ? "cached" : "fresh",
+        data: rawData
+      });
+    } catch (error) {
+      console.error("Error fetching scraper data:", error);
+      res.status(500).json({ message: "Failed to fetch scraper data", error: error.message });
+    }
+  });
+
   // Search properties
   app.get("/api/properties/search", async (req, res) => {
     try {

@@ -1,0 +1,139 @@
+{
+  "railey_scraper_complete_analysis": {
+    "timestamp": "2025-08-07T02:13:33Z",
+    "executive_summary": {
+      "status": "USING HARDCODED SAMPLE DATA",
+      "reason": "Regex parsing fails on modern Railey.com website structure",
+      "website_connection": "SUCCESS - 719,241 character HTML response",
+      "properties_returned": "5 hardcoded sample properties",
+      "real_data": false
+    },
+    "actual_properties_being_returned": [
+      {
+        "id": "sample-1",
+        "title": "Lakefront Mountain Retreat", 
+        "address": "123 Deep Creek Lake Dr, McHenry, MD 21541",
+        "price": 525000,
+        "bedrooms": 3,
+        "bathrooms": "2.5",
+        "sqft": 2100,
+        "imageUrl": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        "description": "Stunning lakefront property with private dock access and panoramic mountain views. Perfect for year-round living or vacation rental.",
+        "features": ["Lakefront", "Private Dock", "Mountain Views", "Fireplace"],
+        "daysOnMarket": 15,
+        "mlsNumber": "SAMPLE001",
+        "source": "HARDCODED_SAMPLE_DATA"
+      },
+      {
+        "id": "sample-2",
+        "title": "Ski-In/Ski-Out Condo",
+        "address": "456 Wisp Resort Rd, McHenry, MD 21541", 
+        "price": 285000,
+        "bedrooms": 2,
+        "bathrooms": "2",
+        "sqft": 1200,
+        "imageUrl": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        "description": "Modern condo with direct ski slope access at Wisp Resort. Fully furnished and ready for mountain adventures.",
+        "features": ["Ski Access", "Resort Amenities", "Furnished", "Mountain Views"],
+        "daysOnMarket": 8,
+        "mlsNumber": "SAMPLE002",
+        "source": "HARDCODED_SAMPLE_DATA"
+      },
+      {
+        "id": "sample-3", 
+        "title": "Mountain View Family Home",
+        "address": "789 Garrett Heights Way, Oakland, MD 21550",
+        "price": 375000,
+        "bedrooms": 4,
+        "bathrooms": "3", 
+        "sqft": 2800,
+        "imageUrl": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        "description": "Spacious family home with breathtaking mountain views and large yard. Great for full-time residence in beautiful Garrett County.",
+        "features": ["Mountain Views", "Large Yard", "Family Friendly", "Updated Kitchen"],
+        "daysOnMarket": 22,
+        "mlsNumber": "SAMPLE003",
+        "source": "HARDCODED_SAMPLE_DATA"
+      },
+      {
+        "id": "sample-4",
+        "title": "Lake Access Cabin", 
+        "address": "321 Lakeshore Trail, Swanton, MD 21561",
+        "price": 195000,
+        "bedrooms": 2,
+        "bathrooms": "1",
+        "sqft": 1000,
+        "imageUrl": "https://images.unsplash.com/photo-1518780664697-55e3ad937233?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        "description": "Cozy cabin with lake access and hiking trails nearby. Perfect weekend getaway in the heart of nature.",
+        "features": ["Lake Access", "Hiking Trails", "Cozy Cabin", "Natural Setting"],
+        "daysOnMarket": 5,
+        "mlsNumber": "SAMPLE004", 
+        "source": "HARDCODED_SAMPLE_DATA"
+      },
+      {
+        "id": "sample-5",
+        "title": "Luxury Mountain Estate",
+        "address": "654 Summit Ridge Dr, Terra Alta, WV 26764",
+        "price": 750000,
+        "bedrooms": 5,
+        "bathrooms": "4.5",
+        "sqft": 4200,
+        "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+        "description": "Impressive luxury estate with premium finishes, multiple fireplaces, and expansive mountain views from every room.",
+        "features": ["Luxury Estate", "Premium Finishes", "Multiple Fireplaces", "Panoramic Views"],
+        "daysOnMarket": 45,
+        "mlsNumber": "SAMPLE005",
+        "source": "HARDCODED_SAMPLE_DATA"
+      }
+    ],
+    "technical_details": {
+      "scraping_attempt": {
+        "url": "https://www.railey.com/listings/",
+        "http_status": "200 OK",
+        "html_length": "719,241 characters",
+        "server": "Apache",
+        "content_type": "text/html; charset=UTF-8",
+        "fetch_successful": true
+      },
+      "parsing_failure": {
+        "regex_pattern_used": "MLS#:\\s*(\\d+).*?href=\"([^\"]*)\".*?\\$([0-9,]+).*?([^<]*)<.*?(\\d+)\\s+Bed.*?(\\d+(?:\\.\\d+)?)\\s+Bath.*?(\\d+,?\\d*)\\s+SqFt",
+        "matches_found": 0,
+        "reason": "Modern website likely uses JavaScript/React to load property data dynamically",
+        "html_structure": "Server-side rendered HTML with minimal property data - listings loaded via JavaScript"
+      },
+      "fallback_behavior": {
+        "triggered": true,
+        "method": "getSampleData()",
+        "properties_count": 5,
+        "all_fake": true
+      }
+    },
+    "website_analysis": {
+      "technology_stack": "Apache server, PHP backend, React/JavaScript frontend",
+      "page_title": "Homes For Sale Near Deep Creek Lake | Deep Creek Real Estate", 
+      "html_class": "root-map-v2-listings",
+      "likely_structure": "Single Page Application (SPA) that loads property data via AJAX/API calls",
+      "scraping_challenges": [
+        "Dynamic content loading via JavaScript",
+        "Modern React application structure", 
+        "Property data likely loaded from separate API endpoints",
+        "Anti-scraping measures may be in place"
+      ]
+    },
+    "recommendations": {
+      "immediate_fix": "Stop using the scraper and clearly indicate sample data",
+      "better_approaches": [
+        "Use a real estate API like RentSpree, MLSGrid, or Bridge Interactive",
+        "Contact Railey Realty for official API access",
+        "Implement browser automation (Playwright/Puppeteer) to handle JavaScript",
+        "Analyze network requests to find the actual API endpoints"
+      ],
+      "quick_solution": "Label all properties as 'Sample Data' and add disclaimer"
+    },
+    "impact_on_chatbot": {
+      "current_state": "AI chatbot references these 5 fake properties as real listings",
+      "user_confusion": "Users may inquire about non-existent properties",
+      "credibility_risk": "High - presenting fake data as real estate listings",
+      "immediate_action_needed": true
+    }
+  }
+}
