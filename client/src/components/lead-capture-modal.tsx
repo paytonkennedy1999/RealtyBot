@@ -75,7 +75,6 @@ export function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalProps) {
             <Input
               id="name"
               type="text"
-              placeholder="John Doe"
               {...form.register("name")}
               className="w-full"
             />
@@ -91,7 +90,6 @@ export function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalProps) {
             <Input
               id="email"
               type="email"
-              placeholder="john@example.com"
               {...form.register("email")}
               className="w-full"
             />

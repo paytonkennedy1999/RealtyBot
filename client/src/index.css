@@ -94,3 +94,17 @@
     background-color: hsl(215, 84%, 44%);
   }
 }
+
+@supports(padding: max(0px)) {
+    .safe-top {
+        padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    
+    .safe-bottom {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+body {
+    overscroll-behavior: none;
+}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, act } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ChatMessage } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -9,7 +9,8 @@ interface ChatWidgetProps {
 }
 
 export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  // Always open and fullscreen
+  const [isOpen] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [sessionId] = useState(() => generateSessionId());
@@ -28,7 +29,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
     onSuccess: (data) => {
       setMessages(data.messages);
       setIsTyping(false);
-      
+
       // Check if response suggests lead capture
       const lastBotMessage = data.messages[data.messages.length - 1];
       if (!lastBotMessage.isUser && (
@@ -43,17 +44,17 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
     },
     onError: (error: any) => {
       setIsTyping(false);
-      
+
       // Add error message to chat
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: error?.message?.includes('quota') 
+        content: error?.message?.includes('quota')
           ? "I'm currently experiencing API limits. Please check back later or contact Railey Realty directly for assistance."
           : "Sorry, I'm having trouble responding right now. Please try again or contact our team directly.",
         isUser: false,
         timestamp: new Date().toISOString(),
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
     },
   });
@@ -73,7 +74,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       };
       setMessages([welcomeMessage]);
     }
-    
+
     // Focus the input when chat opens
     if (isOpen && inputRef.current) {
       setTimeout(() => {
@@ -88,7 +89,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
 
     setInputValue("");
     setIsTyping(true);
-    
+
     // Add user message immediately
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -96,7 +97,7 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       isUser: true,
       timestamp: new Date().toISOString(),
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     sendMessageMutation.mutate(message);
   };
@@ -108,14 +109,62 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
     }
   };
 
+ const formatMessage = (content: string) => {
+  // First split content into paragraphs
+  const paragraphs = content.split('\n\n');
+  
+  return paragraphs.map(paragraph => {
+    // Check if this paragraph contains list items
+    if (paragraph.includes('\n-')) {
+      const items = paragraph.split('\n');
+      return items.map(item => {
+        // Process bold text
+        const boldProcessed = item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Check if it's a list item
+        if (item.trim().startsWith('-')) {
+          return `<li class="mb-1 ml-4">${boldProcessed.replace(/^-\s*/, '')}</li>`;
+        }
+        
+        // Regular paragraph
+        return `<p class="mb-2">${boldProcessed}</p>`;
+      }).join('');
+    }
+    
+    // Regular paragraph with bold processing
+    return `<p class="mb-2">${paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+  }).join('');
+};
+
   const handleQuickAction = (action: string) => {
+    if (action === 'contact') {
+      const url = 'https://www.railey.com/contact-us/';
+      const newWin = window.open(url, '_blank');
+      if (newWin) newWin.opener = null; // security
+      return;
+    }
+
+    if (action === 'find-agent') {
+      const url = 'https://www.railey.com/realestate/agents/group/agents/';
+      const newWin = window.open(url, '_blank');
+      if (newWin) newWin.opener = null; // security
+      return;
+    }
+
+    if (action === 'mortgage-info') {
+      const url = 'https://www.railey.com/financing-a-deep-creek-vacation-home/';
+      const newWin = window.open(url, '_blank');
+      if (newWin) newWin.opener = null; // security
+      return;
+    }
+
     const actionMessages = {
       'search-properties': 'I want to search for properties',
       'schedule-showing': "I'd like to schedule a property showing",
       'contact-agent': 'I want to contact an agent',
       'mortgage-info': 'Can you provide mortgage information?'
     };
-    
+
     const message = actionMessages[action as keyof typeof actionMessages];
     if (message) {
       setInputValue(message);
@@ -123,28 +172,11 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
     }
   };
 
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <button 
-          onClick={() => setIsOpen(true)}
-          className="bg-real-estate-blue hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-105"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-          </svg>
-        </button>
-        <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-          <span className="text-xs text-white font-semibold">1</span>
-        </div>
-      </div>
-    );
-  }
-
+  // Fullscreen widget (replaces the minimized/button UI)
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-xl shadow-2xl z-50 transform transition-all duration-300 flex flex-col">
+    <div className="fixed inset-0 bg-white z-50 flex flex-col min-h-[100dvh] max-h-[100dvh] overflow-hidden">
       {/* Chat Header */}
-      <div className="bg-real-estate-blue text-white p-4 rounded-t-xl flex items-center justify-between">
+      <div className="bg-real-estate-blue text-white p-4 flex items-center justify-between safe-top">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -156,20 +188,13 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
             <p className="text-xs opacity-75">Online now</p>
           </div>
         </div>
-        <button 
-          onClick={() => setIsOpen(false)}
-          className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+        {/* Intentionally no close button — stays fullscreen */}
       </div>
 
       {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message) => (
-          <div 
+          <div
             key={message.id}
             className={`flex items-start space-x-3 ${message.isUser ? 'justify-end' : ''}`}
           >
@@ -180,8 +205,15 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
                 </svg>
               </div>
             )}
-            <div className={`${message.isUser ? 'bg-real-estate-blue text-white' : 'bg-gray-100 text-real-estate-dark'} rounded-xl p-3 max-w-xs`}>
-              <p className="text-sm">{message.content}</p>
+            <div className={`${
+              message.isUser ? 'bg-real-estate-blue text-white' : 'bg-gray-100 text-real-estate-dark'
+            } rounded-xl p-3 max-w-[70%]`}>
+              <div 
+                className="text-sm"
+                dangerouslySetInnerHTML={{ 
+                  __html: formatMessage(message.content)
+                }}
+              />
             </div>
             {message.isUser && (
               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
@@ -214,27 +246,33 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       </div>
 
       {/* Quick Actions */}
-      <div className="px-4 pb-2">
+      <div className="px-6 pb-4">
         <div className="flex flex-wrap gap-2">
-          <button 
+          <button
             onClick={() => handleQuickAction('search-properties')}
             className="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
           >
             🏠 Search Properties
           </button>
-          <button 
+          <button
             onClick={() => handleQuickAction('schedule-showing')}
             className="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
           >
             📅 Schedule Showing
           </button>
-          <button 
-            onClick={() => handleQuickAction('contact-agent')}
+          <button
+            onClick={() => handleQuickAction('find-agent')}
             className="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
           >
-            👤 Contact Agent
+            🔎 Find Agent
           </button>
-          <button 
+          <button
+            onClick={() => handleQuickAction('contact')}
+            className="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            👤 Contact
+          </button>
+          <button
             onClick={() => handleQuickAction('mortgage-info')}
             className="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors"
           >
@@ -244,23 +282,24 @@ export function ChatWidget({ onLeadCapture }: ChatWidgetProps) {
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t bg-gray-50">
-        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center space-x-2">
-          <input 
+      <div className="p-6 border-t bg-gray-50">
+        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center space-x-3">
+          <input
             ref={inputRef}
-            type="text" 
+            type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask about lakefront homes, ski properties..." 
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-real-estate-blue focus:border-transparent text-sm bg-white"
+            placeholder="Ask about lakefront homes, ski properties..."
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-real-estate-blue focus:border-transparent text-sm bg-white"
             disabled={sendMessageMutation.isPending}
             autoComplete="off"
             tabIndex={0}
+            onKeyPress={handleKeyPress}
           />
-          <button 
+          <button
             type="submit"
             disabled={sendMessageMutation.isPending || !inputValue.trim()}
-            className="bg-real-estate-blue text-white rounded-full p-2 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+            className="bg-real-estate-blue text-white rounded-full p-3 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
             {sendMessageMutation.isPending ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

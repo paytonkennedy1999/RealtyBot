@@ -1,0 +1,505 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Chatbot - Professional Property Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'real-estate-blue': '#2563EB',
+                        'real-estate-gray': '#64748B',
+                        'real-estate-success': '#10B981',
+                        'real-estate-light': '#F8FAFC',
+                        'real-estate-dark': '#1E293B'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/heroicons.min.css">
+    <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js"></script>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- @COMPONENT: MainWebsiteLayout -->
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-real-estate-blue rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-semibold text-real-estate-dark" data-bind="company.name">Premier Realty</h1>
+                    </div>
+                    <nav class="hidden md:flex space-x-8">
+                        <a href="#" class="text-real-estate-gray hover:text-real-estate-blue transition-colors">Properties</a>
+                        <a href="#" class="text-real-estate-gray hover:text-real-estate-blue transition-colors">About</a>
+                        <a href="#" class="text-real-estate-gray hover:text-real-estate-blue transition-colors">Contact</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Hero Section -->
+            <section class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-real-estate-dark mb-4">Find Your Dream Home</h2>
+                <p class="text-xl text-real-estate-gray mb-8">Our AI-powered assistant is here to help you discover the perfect property</p>
+                
+                <!-- Property Search Bar -->
+                <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" placeholder="Enter location, ZIP code, or address..." 
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent">
+                        <button class="bg-real-estate-blue text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            Search Properties
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sample Property Listings -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-semibold text-real-estate-dark mb-6">Featured Properties</h3>
+                <!-- @MAP: featuredProperties.map(property => ( -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Modern downtown condo with city skyline view -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden" data-mock="true">
+                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
+                             alt="Modern downtown condo" class="w-full h-48 object-cover" data-mock-image="true">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold text-real-estate-dark mb-2" data-bind="property.title">Downtown Luxury Condo</h4>
+                            <p class="text-real-estate-gray text-sm mb-3" data-bind="property.address">123 Main St, Downtown</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-real-estate-blue" data-bind="property.price">$425,000</span>
+                                <span class="text-sm text-real-estate-gray" data-bind="property.details">2 bed • 2 bath</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Suburban family home with large yard -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden" data-mock="true">
+                        <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
+                             alt="Suburban family home" class="w-full h-48 object-cover" data-mock-image="true">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold text-real-estate-dark mb-2" data-bind="property.title">Family Home with Yard</h4>
+                            <p class="text-real-estate-gray text-sm mb-3" data-bind="property.address">456 Oak Ave, Suburbia</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-real-estate-blue" data-bind="property.price">$325,000</span>
+                                <span class="text-sm text-real-estate-gray" data-bind="property.details">3 bed • 2.5 bath</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Waterfront townhouse with dock access -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden" data-mock="true">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
+                             alt="Waterfront townhouse" class="w-full h-48 object-cover" data-mock-image="true">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold text-real-estate-dark mb-2" data-bind="property.title">Waterfront Townhouse</h4>
+                            <p class="text-real-estate-gray text-sm mb-3" data-bind="property.address">789 Lake Dr, Riverside</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-real-estate-blue" data-bind="property.price">$575,000</span>
+                                <span class="text-sm text-real-estate-gray" data-bind="property.details">3 bed • 3 bath</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </section>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: MainWebsiteLayout -->
+
+    <!-- @COMPONENT: ChatbotWidget -->
+    <!-- Chat Widget Toggle Button -->
+    <div id="chatToggle" class="fixed bottom-6 right-6 z-50">
+        <button class="bg-real-estate-blue hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-105">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+        </button>
+        <div class="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+            <span class="text-xs text-white font-semibold" data-bind="unreadCount">1</span>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chatInterface" class="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-xl shadow-2xl z-40 hidden transform transition-all duration-300">
+        <!-- Chat Header -->
+        <div class="bg-real-estate-blue text-white p-4 rounded-t-xl flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-sm" data-bind="bot.name">RealtyBot Assistant</h3>
+                    <!-- @STATE: isOnline:boolean = true -->
+                    <p class="text-xs opacity-75">Online now</p>
+                </div>
+            </div>
+            <button id="closeChat" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="chatMessages" class="h-64 overflow-y-auto p-4 space-y-3">
+            <!-- Welcome Message -->
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-real-estate-blue rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-3 max-w-xs">
+                    <p class="text-sm text-real-estate-dark" data-mock="true">
+                        Hi! I'm your real estate assistant. I can help you find properties, answer questions about buying/selling, and connect you with our agents. How can I help you today?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sample User Message -->
+            <div class="flex items-start space-x-3 justify-end" data-mock="true">
+                <div class="bg-real-estate-blue rounded-xl p-3 max-w-xs">
+                    <p class="text-sm text-white">I'm looking for a 3-bedroom house under $400k</p>
+                </div>
+                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Bot Response with Property Results -->
+            <div class="flex items-start space-x-3" data-mock="true">
+                <div class="w-8 h-8 bg-real-estate-blue rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-3 max-w-xs">
+                    <p class="text-sm text-real-estate-dark mb-3">Great! I found 2 properties that match your criteria:</p>
+                    
+                    <!-- Property Result Card -->
+                    <div class="bg-white rounded-lg p-3 mb-2 border">
+                        <!-- Cozy suburban home with modern updates -->
+                        <img src="https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=120" 
+                             alt="Suburban home" class="w-full h-20 object-cover rounded mb-2" data-mock-image="true">
+                        <h5 class="font-semibold text-xs text-real-estate-dark">Oak Valley Home</h5>
+                        <p class="text-xs text-real-estate-gray">$325,000 • 3 bed • 2.5 bath</p>
+                    </div>
+                    
+                    <button class="text-xs bg-real-estate-blue text-white px-3 py-1 rounded-full hover:bg-blue-700 transition-colors">
+                        View All Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="flex items-start space-x-3 hidden">
+                <div class="w-8 h-8 bg-real-estate-blue rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-3">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="px-4 pb-2">
+            <div class="flex flex-wrap gap-2">
+                <button class="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors" data-action="search-properties">
+                    🏠 Search Properties
+                </button>
+                <button class="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors" data-action="schedule-showing">
+                    📅 Schedule Showing
+                </button>
+                <button class="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors" data-action="contact-agent">
+                    👤 Contact Agent
+                </button>
+                <button class="text-xs bg-gray-100 text-real-estate-gray px-3 py-1 rounded-full hover:bg-gray-200 transition-colors" data-action="mortgage-info">
+                    💰 Mortgage Info
+                </button>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-4 border-t">
+            <div class="flex items-center space-x-2">
+                <input type="text" id="messageInput" placeholder="Type your message..." 
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-real-estate-blue focus:border-transparent text-sm"
+                       data-implementation="Should handle Enter key for sending">
+                <button id="sendMessage" class="bg-real-estate-blue text-white rounded-full p-2 hover:bg-blue-700 transition-colors" 
+                        data-event="click:sendMessage">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ChatbotWidget -->
+
+    <!-- @COMPONENT: LeadCaptureModal -->
+    <!-- Lead Capture Modal (Hidden by default) -->
+    <div id="leadCaptureModal" class="fixed inset-0 bg-black bg-opacity-50 z-60 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-semibold text-real-estate-dark mb-2">Get Property Updates</h3>
+                <p class="text-real-estate-gray text-sm">Stay informed about new properties matching your criteria</p>
+            </div>
+            
+            <form class="space-y-4" data-implementation="Should validate and submit lead information">
+                <div>
+                    <label class="block text-sm font-medium text-real-estate-dark mb-2">Full Name</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent" 
+                           placeholder="John Doe" data-bind="lead.name">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-real-estate-dark mb-2">Email Address</label>
+                    <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent" 
+                           placeholder="john@example.com" data-bind="lead.email">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-real-estate-dark mb-2">Phone Number</label>
+                    <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent" 
+                           placeholder="(555) 123-4567" data-bind="lead.phone">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-real-estate-dark mb-2">Budget Range</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-real-estate-blue focus:border-transparent" 
+                            data-bind="lead.budget">
+                        <option>Select budget range</option>
+                        <option>Under $200k</option>
+                        <option>$200k - $400k</option>
+                        <option>$400k - $600k</option>
+                        <option>$600k+</option>
+                    </select>
+                </div>
+                
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancelLead" class="flex-1 px-4 py-2 border border-gray-300 text-real-estate-gray rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-real-estate-blue text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Get Updates
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LeadCaptureModal -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Chat Interface Management
+            const chatToggle = document.getElementById('chatToggle');
+            const chatInterface = document.getElementById('chatInterface');
+            const closeChat = document.getElementById('closeChat');
+            const messageInput = document.getElementById('messageInput');
+            const sendMessage = document.getElementById('sendMessage');
+            const chatMessages = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const leadCaptureModal = document.getElementById('leadCaptureModal');
+            const cancelLead = document.getElementById('cancelLead');
+            
+            let isTyping = false;
+            
+            // Mock chatbot responses for demo
+            const mockResponses = {
+                'property search': 'I can help you search for properties! What type of property are you looking for? (house, condo, townhouse)',
+                'schedule showing': 'I\'d be happy to help you schedule a property showing. Please provide your contact information first.',
+                'contact agent': 'Let me connect you with one of our experienced agents. May I have your name and phone number?',
+                'mortgage info': 'I can provide mortgage information and connect you with our preferred lenders. What\'s your budget range?',
+                'default': 'I\'m here to help with your real estate needs! I can assist with property searches, scheduling showings, mortgage information, and connecting you with our agents.'
+            };
+            
+            // Toggle chat interface
+            chatToggle.addEventListener('click', function() {
+                chatInterface.classList.remove('hidden');
+                chatToggle.style.display = 'none';
+                messageInput.focus();
+            });
+            
+            closeChat.addEventListener('click', function() {
+                chatInterface.classList.add('hidden');
+                chatToggle.style.display = 'block';
+            });
+            
+            // Send message functionality
+            function sendUserMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                addMessageToChat(message, true);
+                messageInput.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Simulate bot response after delay
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const response = getBotResponse(message);
+                    addMessageToChat(response, false);
+                    
+                    // Check if we should show lead capture
+                    if (message.toLowerCase().includes('contact') || message.toLowerCase().includes('schedule')) {
+                        setTimeout(() => {
+                            showLeadCapture();
+                        }, 1000);
+                    }
+                }, 1500);
+            }
+            
+            sendMessage.addEventListener('click', sendUserMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendUserMessage();
+                }
+            });
+            
+            // Quick action buttons
+            document.querySelectorAll('[data-action]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    const actionMessages = {
+                        'search-properties': 'I want to search for properties',
+                        'schedule-showing': 'I\'d like to schedule a property showing',
+                        'contact-agent': 'I want to contact an agent',
+                        'mortgage-info': 'Can you provide mortgage information?'
+                    };
+                    
+                    if (actionMessages[action]) {
+                        addMessageToChat(actionMessages[action], true);
+                        
+                        setTimeout(() => {
+                            showTypingIndicator();
+                            setTimeout(() => {
+                                hideTypingIndicator();
+                                const response = getBotResponse(actionMessages[action]);
+                                addMessageToChat(response, false);
+                            }, 1000);
+                        }, 500);
+                    }
+                });
+            });
+            
+            function addMessageToChat(message, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex items-start space-x-3 ${isUser ? 'justify-end' : ''}`;
+                
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = `w-8 h-8 ${isUser ? 'bg-gray-300' : 'bg-real-estate-blue'} rounded-full flex items-center justify-center flex-shrink-0`;
+                
+                const icon = document.createElement('svg');
+                icon.className = `w-4 h-4 ${isUser ? 'text-gray-600' : 'text-white'}`;
+                icon.innerHTML = isUser 
+                    ? '<path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>'
+                    : '<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>';
+                icon.setAttribute('viewBox', '0 0 24 24');
+                avatarDiv.appendChild(icon);
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = `${isUser ? 'bg-real-estate-blue text-white' : 'bg-gray-100 text-real-estate-dark'} rounded-xl p-3 max-w-xs`;
+                messageContent.innerHTML = `<p class="text-sm">${message}</p>`;
+                
+                if (isUser) {
+                    messageDiv.appendChild(messageContent);
+                    messageDiv.appendChild(avatarDiv);
+                } else {
+                    messageDiv.appendChild(avatarDiv);
+                    messageDiv.appendChild(messageContent);
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function showTypingIndicator() {
+                typingIndicator.classList.remove('hidden');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                isTyping = true;
+            }
+            
+            function hideTypingIndicator() {
+                typingIndicator.classList.add('hidden');
+                isTyping = false;
+            }
+            
+            function getBotResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('property') || lowerMessage.includes('search') || lowerMessage.includes('house') || lowerMessage.includes('home')) {
+                    return mockResponses['property search'];
+                } else if (lowerMessage.includes('schedule') || lowerMessage.includes('showing') || lowerMessage.includes('view')) {
+                    return mockResponses['schedule showing'];
+                } else if (lowerMessage.includes('agent') || lowerMessage.includes('contact') || lowerMessage.includes('speak')) {
+                    return mockResponses['contact agent'];
+                } else if (lowerMessage.includes('mortgage') || lowerMessage.includes('loan') || lowerMessage.includes('financing')) {
+                    return mockResponses['mortgage info'];
+                } else {
+                    return mockResponses['default'];
+                }
+            }
+            
+            function showLeadCapture() {
+                leadCaptureModal.classList.remove('hidden');
+            }
+            
+            function hideLeadCapture() {
+                leadCaptureModal.classList.add('hidden');
+            }
+            
+            cancelLead.addEventListener('click', hideLeadCapture);
+            
+            // Close modal when clicking outside
+            leadCaptureModal.addEventListener('click', function(e) {
+                if (e.target === leadCaptureModal) {
+                    hideLeadCapture();
+                }
+            });
+            
+            // Form submission (mock)
+            document.querySelector('#leadCaptureModal form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // TODO: Implement actual form submission
+                hideLeadCapture();
+                addMessageToChat('Thank you! I\'ve saved your information and one of our agents will contact you shortly.', false);
+            });
+            
+        })();
+    </script>
+</body>
+</html>
